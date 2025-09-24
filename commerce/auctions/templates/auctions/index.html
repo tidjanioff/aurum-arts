@@ -1,0 +1,52 @@
+{% extends "auctions/layout.html" %}
+{% load humanize %}
+
+{% block body %}
+        <div id="welcome-message">
+            {% if user.is_authenticated %}
+                Signed in as <strong>{{ user.username }}</strong>. 
+            {% else %}
+                   
+            {% endif %}
+        </div>
+        
+    <div class="category-selection">
+        <form action="{% url 'displayCategory' %}" method="POST" class="my-3">
+            {% csrf_token %}
+            <label for="category">Choose a category &#8594;</label>
+            <select name="category" id="category">
+                {% for cat in categories %}
+                    <option value="{{ cat }}" 
+                            {% if selected_category == cat %}selected{% endif %}>
+                        {{ cat }}
+                    </option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="btn btn-warning">Select</button> 
+        </form>
+    </div>
+
+    <div class="cards-container">
+    {% for listing in listings %}
+        {% if listing.isActive %}
+    <div class="card mx-1" style="width: 18rem;">
+        <img src="{{ listing.imageURL }}" class="card-img-top" alt="{{ listing.title }}">
+        <div class="card-body d-flex flex-column">
+            <h5 class="card-title">{{ listing.title }}</h5>
+            <p class="card-text">{{ listing.description }}</p>
+
+            <div class="mt-auto">
+                <p class="card-text mb-2" style="font-size: 1.2em;">
+                    <strong>${{ listing.price.bid|floatformat:0|intcomma }}</strong>
+                </p>
+                <div class="details-btn-container text-center" >
+                    <a href="{% url 'listing' id=listing.id %}" class="details-btn" style="margin-top: 10px;">Details</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        {% endif %}
+    {% endfor %}
+    </div>
+{% endblock %}
